@@ -7,7 +7,8 @@ public class KeyTimePair {
     private String secret;
     private String time;
 
-    public KeyTimePair(){}
+    public KeyTimePair() {
+    }
 
     public KeyTimePair(JSONObject o) throws JSONException {
         secret = (String) o.get("secret");
@@ -22,6 +23,11 @@ public class KeyTimePair {
         this.secret = secret;
     }
 
+    public KeyTimePair putSecret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
     public String getTime() {
         return time;
     }
@@ -29,4 +35,10 @@ public class KeyTimePair {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public KeyTimePair putTime(String time) {
+        this.time = time;
+        return this;
+    }
+
 }

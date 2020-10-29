@@ -10,6 +10,8 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.covidapp.R;
+import com.example.covidapp.constant.AppConstant;
+import com.example.covidapp.constant.ContextStore;
 import com.example.covidapp.dataaccesslayer.DatabaseHelper;
 import com.example.covidapp.ephId.EphemeralGenerator;
 
@@ -20,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EphIdService extends Worker {
     // should be load up from property
-    private static int regenRate = R.integer.regen_rate;
+    private static int regenRate = AppConstant.REGEN_RATE;
     private static int secretLifeTime = 24 * 60 / regenRate; // number of id would be generated 24 * 60 / regenRate
 
     private static Date myTime = null;
@@ -28,7 +30,7 @@ public class EphIdService extends Worker {
     private static String activatingSecret = null;
     private static String currentID = null;
 
-    DatabaseHelper DB = new DatabaseHelper(this.getApplicationContext());
+    DatabaseHelper DB = DatabaseHelper.getInstance(this.getApplicationContext());
 
     public EphIdService(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -46,7 +48,7 @@ public class EphIdService extends Worker {
             cannot query from db to try get latest, since the we don't know where if the secret is end of life or the order/index of tempID
          */
         WorkManager wm = WorkManager.getInstance(this.getApplicationContext());
-        wm.enqueue(new OneTimeWorkRequest.Builder(EphIdService.class).setInitialDelay(5, TimeUnit.SECONDS).build());
+        wm.enqueue(new OneTimeWorkRequest.Builder(EphIdService.class).setInitialDelay(regenRate, TimeUnit.SECONDS).build());
         return Result.success();
     }
 
@@ -57,8 +59,6 @@ public class EphIdService extends Worker {
     }
 
     public synchronized void execute() {
-        Log.e("Timer", "changing ID...");
-        //
         if(myTime == null) {
             myTime = Calendar.getInstance().getTime();
         }
@@ -72,9 +72,10 @@ public class EphIdService extends Worker {
     }
 
     private synchronized void changeSecret(){
+        Log.e("Timer", "changing Secret...");
         // update generation time
         myTime = Calendar.getInstance().getTime();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
         activatingSecret = EphemeralGenerator.generateSecret();
 
 
@@ -83,15 +84,15 @@ public class EphIdService extends Worker {
     }
 
     private synchronized void changeTempID() {
+        Log.e("Timer", "changing ID...");
         // add regeneration Rate into th
         myTime = new Date (myTime.getTime() + regenRate * 1000 * 60);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
 
         currentID = EphemeralGenerator.nextID(activatingSecret, myTime.getTime());
-        incrementCounter();
+        ContextStore.getInstance().setTempID(currentID);
 
-        // insert into Db
-        Boolean checkinsertdata = DB.inserttempiddata(currentID, simpleDateFormat.format(myTime));
+        incrementCounter();
     }
 
     private void resetCounter(){

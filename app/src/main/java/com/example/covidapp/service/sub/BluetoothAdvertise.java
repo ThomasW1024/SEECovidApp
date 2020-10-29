@@ -18,6 +18,7 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.covidapp.constant.ContextStore;
 import com.example.covidapp.ephId.EphemeralGenerator;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -85,7 +86,7 @@ public class BluetoothAdvertise extends Worker {
 //                .build();
 
         ParcelUuid pUuid = new ParcelUuid(MY_UUID_INSECURE);
-        String iddata= EphemeralGenerator.nextID(EphemeralGenerator.generateSecret(),Calendar.getInstance().getTimeInMillis()).replaceAll("-","");
+        String iddata= ContextStore.getInstance().getTempID().replaceAll("-","");
         Log.v(TAG,"EphId" + iddata);
         iddata =getValidId(iddata);
         iddata=getId(6).toLowerCase();

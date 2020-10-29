@@ -16,6 +16,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.covidapp.R;
+import com.example.covidapp.dataaccesslayer.DatabaseHelper;
 import com.example.covidapp.service.BluetoothBackgroundService;
 
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,7 @@ public class BluetoothScan extends Worker {
                 StringBuilder builder = new StringBuilder( "");
                 builder.append("\n").append(new String(result.getScanRecord().getServiceData(new ParcelUuid(MY_UUID_INSECURE)), StandardCharsets.UTF_8));
                 //builder.append("\n").append(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), Charset.forName("UTF-8")));
+                DatabaseHelper.getInstance(getApplicationContext()).inserttempiddata(builder.toString());
                 Log.e( "BLE", "Data from advert " + builder.toString() );
             }
 
