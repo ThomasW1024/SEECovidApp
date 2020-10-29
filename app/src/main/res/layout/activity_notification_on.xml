@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="COVID-19 Application"
+        android:text="NORONA"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginTop="20dp"
@@ -30,7 +30,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Turn on notification exposure"
+        android:text="Click on the Start Tracing button to start the application"
         android:textSize="30sp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
@@ -41,17 +41,17 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Turn On"
+        android:text="Start Tracing"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/textView"
  />
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="wrap_content"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
-        android:text="Not Now"
+        android:layout_below="@id/button2"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/button2"/>
+        android:text="Not Now" />
 
 </RelativeLayout>
