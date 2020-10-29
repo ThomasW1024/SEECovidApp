@@ -3,10 +3,14 @@ package com.example.covidapp.httprequest;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
@@ -17,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 public class HttpRequestFactory {
     private static HttpRequestFactory instance;
     private static Context ctx;
+    RequestQueue queue = Volley.newRequestQueue(ctx);
 
     private HttpRequestFactory(Context context) {
         ctx = context;
@@ -41,15 +47,14 @@ public class HttpRequestFactory {
     public void sendRequest() {
         Log.e("HTTP", "clickme");
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(ctx);
         String url = "https://10.0.2.2:3000/";
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.e("HTTP", response.substring(0, 500));
+                        // textView.setText("Response: " + response.toString());
+                        Log.e("HTTP", response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -61,40 +66,81 @@ public class HttpRequestFactory {
 
     }
 
+    private void submitKeys(JSONObject jsonBody ){
+        Log.e("HTTP", "submitKeys");
+        String url ="https://10.0.2.2:3000/security_code";
+        final String requestBody = jsonBody.toString();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Log.e("HTTP", response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("HTTP", error.getLocalizedMessage());
+            }
+        }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode); //+ new String(response.data);
+                    // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+        };
+        queue.add(stringRequest);
+    }
 
 
-    // TODO replicate from above example
-//    public boolean getCasesAndMatch(){
-//        boolean ifMatched = false;
-//        RequestFuture<JSONArray> future = RequestFuture.newFuture();
-//        String url = "localhost:4200/cases";
-//        HttpRequestQueue.getInstance(this).addToRequestQueue(new JsonArrayRequest(Request.Method.GET, url, null, future, future));
-//        try {
-//            JSONArray response = future.get();
-//            List<String> infectedIds = new ArrayList<>();
-//            // TODO need to matches the Service settings
-//            int interval = 15;
-//            int numberToGenerate = 96;
-//            for (int i = 0; i <= response.length(); i += 1) {
-//                try {
-//                    JSONObject o = response.getJSONObject(i);
-//                    // TODO get the secret and time out from object;
-//                    String secret = "";
-//                    long time = 0;
-//                    infectedIds.addAll(EphemeralGenerator.getIDs(secret, time, interval, numberToGenerate));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            // TODO do crossChecking Here
-//            ifMatched = true;
-//        } catch (InterruptedException e) {
-//            // exception handling
-//        } catch (ExecutionException e) {
-//            // exception handling
-//        }
-//        return ifMatched;
-//    }
+    private void downloadKeys(){
+        Log.e("HTTP", "downloadKeys");
+        String url ="https://10.0.2.2:3000/get_secret_list";
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.e("Response", "success");
+
+                        List<KeyTimePair> list = new ArrayList<>();
+                        for (int i=0; i < response.length(); i+=1) {
+                            try {
+                                KeyTimePair pair = new KeyTimePair(response.getJSONObject(i));
+                                list.add(pair);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Response", "fail");
+                    }
+                });
+        queue.add(jsonArrayRequest);
+    }
 
 
 }

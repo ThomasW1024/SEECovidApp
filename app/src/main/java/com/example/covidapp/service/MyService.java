@@ -91,7 +91,6 @@ public class MyService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         return null;
     }
 

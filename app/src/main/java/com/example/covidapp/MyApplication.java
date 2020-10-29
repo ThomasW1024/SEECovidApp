@@ -33,16 +33,7 @@ public class MyApplication extends Application implements Configuration.Provider
         super.onCreate();
         //Parse SDK stuff goes here
         try {
-            HttpsURLConnection.setDefaultSSLSocketFactory(getSocketFactory(this));
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    if (Objects.equals("10.0.2.2", hostname)) {
-                        return true;
-                    }
-                    return false;
-                }
-            });
+            setupHTTPS();
         } catch (CertificateException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -54,6 +45,19 @@ public class MyApplication extends Application implements Configuration.Provider
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupHTTPS() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException{
+        HttpsURLConnection.setDefaultSSLSocketFactory(getSocketFactory(this));
+        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+                if (Objects.equals("10.0.2.2", hostname)) {
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
