@@ -9,6 +9,7 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.covidapp.R;
 import com.example.covidapp.dataaccesslayer.DatabaseHelper;
 import com.example.covidapp.ephId.EphemeralGenerator;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EphIdService extends Worker {
     // should be load up from property
-    private static int regenRate = 15;
+    private static int regenRate = R.integer.regen_rate;
     private static int secretLifeTime = 24 * 60 / regenRate; // number of id would be generated 24 * 60 / regenRate
 
     private static Date myTime = null;

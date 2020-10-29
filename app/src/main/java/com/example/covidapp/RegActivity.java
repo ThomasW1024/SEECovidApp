@@ -3,7 +3,9 @@ package com.example.covidapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +25,7 @@ public class RegActivity extends AppCompatActivity {
  //   private EditText userID;
     public Button regButton;
     public static  String pass;
+    SharedPreferences sharedPref;
   //  private FirebaseAuth firebase;
 
 
@@ -30,7 +33,10 @@ public class RegActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reg);
-
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        if(havePass()){
+            changePage();
+        }
         pinCode = (EditText) findViewById(R.id.editTextNumberPassword2);
         //   userID = (EditText) findViewById(R.id.editTextTextPersonName);
         regButton = (Button) findViewById(R.id.button);
@@ -39,14 +45,31 @@ public class RegActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 pass= pinCode.getText().toString();
+                storePass(pass);
                 checkData();
             }
         });
     }
+
+    private boolean havePass() {
+        pass = sharedPref.getString(getString(R.string.pass_code), null);
+        return  pass != null;
+    }
+
+    private void storePass(String pass){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.pass_code), pass);
+        editor.apply();
+    }
+
      boolean isEmpty ( EditText text)
      {
          CharSequence str = text.getText().toString();
          return TextUtils.isEmpty(str);
+     }
+     private void changePage(){
+         Intent intent = new Intent(this, LoginActivity.class);
+         startActivity(intent);
      }
     void checkData(){
         if ( isEmpty(pinCode))
@@ -55,8 +78,8 @@ public class RegActivity extends AppCompatActivity {
         }
         else
         {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);}
+            changePage();
+        }
         //  firebase = FirebaseAuth.getInstance();
 
     /*    regButton.setOnClickListener(new View.OnClickListener() {

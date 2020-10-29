@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">COVIDapp</string>
+    <string name="pass_code">PASSCODE</string>
 </resources>

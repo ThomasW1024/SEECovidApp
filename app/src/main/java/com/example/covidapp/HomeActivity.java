@@ -60,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
          */
         //TODO move to other part
         //Log.e(TAG,"Starting BluetoothBackgroundService");
-        startService(new Intent(this, BluetoothBackgroundService.class));
+
     }
 
     public void openLoginPage() {

@@ -23,13 +23,11 @@ public class NotificationOn extends AppCompatActivity {
 
         firstButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                // openDialog();
-                //  MyService ser = new MyService();//////////
-                // ser.startService();////////////
                 Intent serviceIntent = new Intent(NotificationOn.this, MyService.class);
                 serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
 
                 ContextCompat.startForegroundService(NotificationOn.this, serviceIntent);
+
                 openMainPage();
             }
         });
@@ -37,8 +35,6 @@ public class NotificationOn extends AppCompatActivity {
         Button secondButton = (Button) findViewById(R.id.button3);
         secondButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-              //  MyService ser = new MyService();////////////
-                //ser.stopService();///////
                 Intent serviceIntent = new Intent(NotificationOn.this, MyService.class);
                 stopService(serviceIntent);
                 openMainPage();
