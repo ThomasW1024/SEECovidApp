@@ -47,6 +47,7 @@ import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 public class BluetoothBackgroundService extends Service {
     private String TAG=BluetoothBackgroundService.class.getName();
+    private static final int TOEKN = 13;
     private BluetoothManager bluetoothManager = null;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner = null;
@@ -103,7 +104,7 @@ public class BluetoothBackgroundService extends Service {
             super.onScanFailed(errorCode);
         }
     };
-
+    private AdvertisingSetCallback mAdvertisingSetCallback;
     @Override
     public void onCreate() {
 
@@ -115,13 +116,13 @@ public class BluetoothBackgroundService extends Service {
                 "MyApp::MyWakelockTag");
         wakeLock.acquire();
         handler = new Handler();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-        }
-        else{
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+//            mBluetoothAdapter = bluetoothManager.getAdapter();
+//        }
+//        else{
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        }
+//        }
 
         mBluetoothAdapter.enable();
 
@@ -144,7 +145,13 @@ public class BluetoothBackgroundService extends Service {
         //Toast.makeText(this, "Service was Created", Toast.LENGTH_LONG).show();
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBluetoothAdapter.cancelDiscovery();
+        mBluetoothAdapter.getBluetoothLeAdvertiser().stopAdvertisingSet(mAdvertisingSetCallback);
+        handler.removeCallbacksAndMessages(TOEKN);
+    }
 
     @Override
     public int onStartCommand(Intent pIntent, int flags, int startId) {
@@ -211,7 +218,7 @@ public class BluetoothBackgroundService extends Service {
                 .build();
 
 
-        AdvertisingSetCallback callback = new AdvertisingSetCallback() {
+        mAdvertisingSetCallback = new AdvertisingSetCallback() {
             @Override
             public void onAdvertisingSetStarted(AdvertisingSet advertisingSet, int txPower, int status) {
                 Log.e(TAG, "onAdvertisingSetStarted(): txPower:" + txPower + " , status: "
@@ -259,7 +266,6 @@ public class BluetoothBackgroundService extends Service {
             @Override
             public void onAdvertisingDataSet(AdvertisingSet advertisingSet, int status) {
                 Log.e(TAG, "onAdvertisingDataSet() :status:" + status);
-
             }
 
             @Override
@@ -272,7 +278,7 @@ public class BluetoothBackgroundService extends Service {
                 Log.e(TAG, "onAdvertisingSetStopped():");
             }
         };
-        advertiser.startAdvertisingSet(parameters, data, scanResponse, null, null, callback);
+        advertiser.startAdvertisingSet(parameters, data, scanResponse, null, null, mAdvertisingSetCallback);
 
 
         return START_STICKY;
@@ -281,14 +287,16 @@ public class BluetoothBackgroundService extends Service {
     private void scanLeDevice() {
         if (!mScanning) {
             // Stops scanning after a pre-defined scan period.
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-                    Log.e(TAG,"Stopping scanning");
-                    bluetoothLeScanner.stopScan(mScanCallback);
-                }
-            }, SCAN_PERIOD);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mScanning = false;
+                        Log.e(TAG,"Stopping scanning");
+                        bluetoothLeScanner.stopScan(mScanCallback);
+                    }
+                }, TOEKN, SCAN_PERIOD);
+            }
 
             mScanning = true;
             Log.e(TAG,"Started scanning");

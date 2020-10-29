@@ -9,6 +9,6 @@ public class CrossChecking extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cross_checking);
+//        setContentView(R.layout.activity_cross_checking);
     }
 }

@@ -18,6 +18,8 @@ import androidx.work.WorkRequest;
 
 import com.example.covidapp.MainActivity;
 import com.example.covidapp.R;
+import com.example.covidapp.service.sub.BluetoothAdvertise;
+import com.example.covidapp.service.sub.BluetoothScan;
 import com.example.covidapp.service.sub.EphIdService;
 
 /**
@@ -67,12 +69,18 @@ public class MyService extends Service {
         startForeground(1, notification);
 
         //do heavy work on a background thread
+        WorkManager wm = WorkManager.getInstance(this);
 
-        // TODO device base communication
-        // please query tempID from DB
+        // TODO device to device communication
+        /* Calling the Service handler */
+//        startService(new Intent(this, BluetoothBackgroundService.class));
+        /* Calling the worker */
+        WorkRequest wr2 =  new OneTimeWorkRequest.Builder(BluetoothAdvertise.class).build();
+        wm.enqueue(wr2);
+        WorkRequest wr3 =  new OneTimeWorkRequest.Builder(BluetoothScan.class).build();
+        wm.enqueue(wr3);
 
         // regenerate EphID
-        WorkManager wm = WorkManager.getInstance(this);
         // using manual regeneration method, see the Work class
         WorkRequest wr =  new OneTimeWorkRequest.Builder(EphIdService.class).build();
         wm.enqueue(wr);
@@ -86,6 +94,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         WorkManager.getInstance(this).cancelAllWork();
+        stopService(new Intent(this, BluetoothBackgroundService.class));
         super.onDestroy();
     }
 
