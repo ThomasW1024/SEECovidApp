@@ -11,6 +11,7 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
@@ -107,4 +108,23 @@ public class MyService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
+
+
+    //Rand added this
+
+    // how to start this server:
+    public void startService() {
+        Intent serviceIntent = new Intent(this, MyService.class);
+        serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
+
+        ContextCompat.startForegroundService(this, serviceIntent);
+    }
+
+    public void stopService() {
+        Intent serviceIntent = new Intent(this, MyService.class);
+        stopService(serviceIntent);
+    }
+
+
+
 }
