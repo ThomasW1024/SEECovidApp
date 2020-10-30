@@ -18,6 +18,7 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.covidapp.constant.AppConstant;
 import com.example.covidapp.constant.ContextStore;
 import com.example.covidapp.ephId.EphemeralGenerator;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +32,7 @@ public class BluetoothAdvertise extends Worker {
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
-    private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private static final UUID MY_UUID_INSECURE = UUID.fromString(AppConstant.MY_UUID_INSECURE);
     private AdvertisingSet currentAdvertisingSet;
     private AdvertisingSetCallback mAdvertisingSetCallback;
     private boolean is2msupported=true;
@@ -86,21 +87,23 @@ public class BluetoothAdvertise extends Worker {
 //                .build();
 
         ParcelUuid pUuid = new ParcelUuid(MY_UUID_INSECURE);
-        String iddata= ContextStore.getInstance().getTempID().replaceAll("-","");
+        String tempID = ContextStore.getInstance().getTempID().replaceAll("-","");
+
+        String iddata= tempID.substring(tempID.length() -27, tempID.length());
         Log.v(TAG,"EphId" + iddata);
-        iddata =getValidId(iddata);
-        iddata=getId(6).toLowerCase();
+//        iddata =getValidId(iddata);
+//        iddata=getId(6).toLowerCase();
 //        Log.v(TAG,"Hash length is "+String.valueOf(hashlength));
         Log.e(TAG,"After Hash:" + iddata);
 
         mBluetoothLeAdvertiser = mBluetoothAdapter.getBluetoothLeAdvertiser();
+
         // stop then restart
         mBluetoothLeAdvertiser.stopAdvertisingSet(mAdvertisingSetCallback);
         mBluetoothLeAdvertiser.startAdvertisingSet(
                 parameters,
                 new AdvertiseData.Builder()
                 .setIncludeDeviceName( false )
-                .addServiceUuid( pUuid )
                 .addServiceData( pUuid, iddata.getBytes(StandardCharsets.UTF_8) )
                 .build(),
                 new AdvertiseData.Builder()

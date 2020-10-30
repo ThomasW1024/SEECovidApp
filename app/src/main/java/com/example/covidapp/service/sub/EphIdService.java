@@ -85,11 +85,13 @@ public class EphIdService extends Worker {
 
     private synchronized void changeTempID() {
         Log.e("Timer", "changing ID...");
-        // add regeneration Rate into th
+        // add regeneration Rate
         myTime = new Date (myTime.getTime() + regenRate );
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
 
-        currentID = EphemeralGenerator.nextID(activatingSecret, myTime.getTime());
+        Log.e("eeee", activatingSecret+""+myTime.getTime());
+        final String c = EphemeralGenerator.nextID(activatingSecret, myTime.getTime());
+        currentID = c;
         ContextStore.getInstance().setTempID(currentID);
 
         incrementCounter();

@@ -16,8 +16,9 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.covidapp.R;
+import com.example.covidapp.constant.AppConstant;
 import com.example.covidapp.dataaccesslayer.DatabaseHelper;
-import com.example.covidapp.service.BluetoothBackgroundService;
+//import com.example.covidapp.service.BluetoothBackgroundService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BluetoothScan extends Worker {
     private String TAG= BluetoothScan.class.getName();
-    private static final UUID MY_UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private static final UUID MY_UUID_INSECURE = UUID.fromString(AppConstant.MY_UUID_INSECURE);
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBluetoothLeScanner;
     private ScanCallback mScanCallback;
@@ -65,16 +66,16 @@ public class BluetoothScan extends Worker {
                 Log.e(TAG,result.toString());
                 super.onScanResult(callbackType, result);
                 if( result == null
-                        || result.getDevice() == null
-                        || TextUtils.isEmpty(result.getDevice().getName()) )
+                        || result.getScanRecord().getServiceData().size() == 0
+                         )
                     return;
-
-                //StringBuilder builder = new StringBuilder( result.getDevice().getName() );
-                StringBuilder builder = new StringBuilder( "");
-                builder.append("\n").append(new String(result.getScanRecord().getServiceData(new ParcelUuid(MY_UUID_INSECURE)), StandardCharsets.UTF_8));
-                //builder.append("\n").append(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0)), Charset.forName("UTF-8")));
-                DatabaseHelper.getInstance(getApplicationContext()).inserttempiddata(builder.toString());
-                Log.e( "BLE", "Data from advert " + builder.toString() );
+                byte[] value = result.getScanRecord().getServiceData(new ParcelUuid(MY_UUID_INSECURE));
+                if (value == null){
+                    return;
+                }
+                String receivedID = new String (value);
+                DatabaseHelper.getInstance(getApplicationContext()).inserttempiddata(receivedID);
+                Log.e( "BLE", "Data from advert " + receivedID );
             }
 
             @Override

@@ -94,7 +94,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         WorkManager.getInstance(this).cancelAllWork();
-        stopService(new Intent(this, BluetoothBackgroundService.class));
+//        stopService(new Intent(this, BluetoothBackgroundService.class));
         super.onDestroy();
     }
 

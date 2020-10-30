@@ -86,15 +86,20 @@ public class Exposures extends AppCompatActivity {
             for(int i = 0; i < secretFromTheServer.size(); i+=1){
                 KeyTimePair item = secretFromTheServer.get(i);
                 Date d =  new SimpleDateFormat(AppConstant.DATE_FORMAT).parse(item.getTime());
-                TempIDFromServer.addAll(EphemeralGenerator.getIDs(item.getSecret(), d.getTime()));
+                List<String> tempIDs = EphemeralGenerator.getIDs(item.getSecret(), d.getTime());
+                for(int j = 0; j < tempIDs.size(); j+=1){
+                    String id = tempIDs.get(j);
+                    id = id.replaceAll("-","");
+                    id = id.substring(id.length() -27, id.length());
+                    TempIDFromServer.add(id);
+                }
             }
             // get all the tempID stored in Android
             List<String> contactedTempID= DatabaseHelper.getInstance(getApplicationContext()).getTempdata();
 
             // compare
-            // Disjoin return true when on common found
             exposed = Collections.disjoint(TempIDFromServer, contactedTempID);
-            if(! exposed){
+            if(exposed){
                 statusView.setText("Status: Positive");
             }else {
                 statusView.setText("Status: Negative");
