@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class EphIdService extends Worker {
     // should be load up from property
     private static int regenRate = AppConstant.REGEN_RATE;
-    private static int secretLifeTime = 24 * 60 / regenRate; // number of id would be generated 24 * 60 / regenRate
+    private static int secretLifeTime = AppConstant.SECRET_LIFETIME; // number of id would be generated 24 * 60 / regenRate
 
     private static Date myTime = null;
     private static long counter = 0;
@@ -86,7 +86,7 @@ public class EphIdService extends Worker {
     private synchronized void changeTempID() {
         Log.e("Timer", "changing ID...");
         // add regeneration Rate into th
-        myTime = new Date (myTime.getTime() + regenRate * 1000 * 60);
+        myTime = new Date (myTime.getTime() + regenRate );
 //        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
 
         currentID = EphemeralGenerator.nextID(activatingSecret, myTime.getTime());

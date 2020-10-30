@@ -29,10 +29,11 @@ import java.util.concurrent.ExecutionException;
 public class HttpRequestFactory {
     private static HttpRequestFactory instance;
     private static Context ctx;
-    RequestQueue queue = Volley.newRequestQueue(ctx);
+    RequestQueue queue ;
 
     private HttpRequestFactory(Context context) {
         ctx = context;
+        queue = Volley.newRequestQueue(ctx);
     }
 
 
@@ -66,7 +67,7 @@ public class HttpRequestFactory {
 
     }
 
-    private void submitKeys(JSONObject jsonBody ){
+    public void submitKeys(JSONObject jsonBody ){
         Log.e("HTTP", "submitKeys");
         String url ="https://10.0.2.2:3000/security_code";
         final String requestBody = jsonBody.toString();
@@ -111,8 +112,7 @@ public class HttpRequestFactory {
         queue.add(stringRequest);
     }
 
-
-    private void downloadKeys(){
+    public void downloadKeys(){
         Log.e("HTTP", "downloadKeys");
         String url ="https://10.0.2.2:3000/get_secret_list";
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
@@ -142,6 +142,46 @@ public class HttpRequestFactory {
         queue.add(jsonArrayRequest);
     }
 
+    public void submitKeys(JSONObject jsonBody,Response.Listener<String> onResponse,Response.ErrorListener onError ){
+        Log.e("HTTP", "submitKeys");
+        String url ="https://10.0.2.2:3000/security_code";
+        final String requestBody = jsonBody.toString();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,onResponse, onError) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String responseString = "";
+                if (response != null) {
+                    responseString = String.valueOf(response.statusCode); //+ new String(response.data);
+                    // can get more details such as response.headers
+                }
+                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+        };
+        queue.add(stringRequest);
+    }
+
+    public void downloadKeys(Response.Listener<JSONArray> onResponse,Response.ErrorListener onError){
+        Log.e("HTTP", "downloadKeys");
+        String url ="https://10.0.2.2:3000/get_secret_list";
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+                (Request.Method.GET, url, null, onResponse, onError);
+        queue.add(jsonArrayRequest);
+    }
 
 }
 

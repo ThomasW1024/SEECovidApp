@@ -41,4 +41,8 @@ public class KeyTimePair {
         return this;
     }
 
+    public String toJSON(){
+        return "{\"secret\":\"" + secret + "\",\"time\":\"" + time + "\"}";
+    }
+
 }

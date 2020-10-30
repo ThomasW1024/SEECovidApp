@@ -28,7 +28,7 @@ tools:context=".HomeActivity">
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Welcome to COVID-19 Contact Tracing Application"
+    android:text="Welcome to NORONA Application"
     android:textColor="#ff000000"
     android:textSize="30sp"
     android:id="@+id/textView"

@@ -36,8 +36,8 @@ public class EphemeralGenerator {
         return ids;
     }
 
-    public static List<String> getIDs(String secret, long time, int numberToGenerate) {
-        return getIDs(secret, time, AppConstant.REGEN_RATE, numberToGenerate);
+    public static List<String> getIDs(String secret, long time) {
+        return getIDs(secret, time, AppConstant.REGEN_RATE, AppConstant.SECRET_LIFETIME);
     }
 
     // n start with 1
@@ -60,12 +60,5 @@ public class EphemeralGenerator {
         return null;
     }
 }
-
-
-compare(KeyTimePair c){}
-    List<string> = DB.getTempdata
-    ListB = GenrateID(c.getserert, c.gettime, xx)
-Collections.disjoin(list, listb);
-
 
 

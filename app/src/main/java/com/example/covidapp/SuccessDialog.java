@@ -8,18 +8,18 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-public class firstDialog extends AppCompatDialogFragment {
+public class SuccessDialog extends AppCompatDialogFragment{
 
     public Dialog onCreateDialog (Bundle savedInstanceState)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Notification Status").setMessage("Your notification has been turned on").setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        builder.setTitle("Verification Status").setMessage("Your Verification Code has been ACCEPTED and your status is shared").setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
             }
         });
 
         return builder.create();
     }
+
 }

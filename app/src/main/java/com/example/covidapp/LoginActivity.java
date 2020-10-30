@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                String pin = pinCode2.getText().toString();
                if ( pin.equals(RegActivity.pass))
                {
-                   Intent intent = new Intent(this, NotificationOn.class);
+                   Intent intent = new Intent(this, TracingOn.class);
                    startActivity(intent);
                }
                else

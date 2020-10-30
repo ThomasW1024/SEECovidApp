@@ -9,7 +9,18 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import android.util.Log;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.covidapp.dataaccesslayer.DatabaseHelper;
+import com.example.covidapp.httprequest.HttpRequestFactory;
+import com.example.covidapp.httprequest.KeyTimePair;
 import com.example.covidapp.service.BluetoothBackgroundService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

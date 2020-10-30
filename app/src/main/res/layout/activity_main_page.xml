@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                android:text="Share your test results if you tested positive"
+                android:text="Share your contract log if you tested positive"
                 android:textSize="25sp"
                 android:textStyle="bold"/>
 

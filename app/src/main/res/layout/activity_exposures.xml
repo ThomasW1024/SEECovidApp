@@ -38,7 +38,7 @@
         android:gravity="center" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/checkExposure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -51,13 +51,13 @@
         tools:layout_editor_absoluteY="201dp" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/editTextTextPersonName2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
         android:gravity="center"
         android:layout_marginTop="20dp"
-        android:layout_below="@id/button5"
+        android:layout_below="@id/checkExposure"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         tools:layout_editor_absoluteX="181dp"

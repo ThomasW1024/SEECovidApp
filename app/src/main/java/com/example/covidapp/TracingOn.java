@@ -8,10 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.covidapp.service.MyService;
 
-public class NotificationOn extends AppCompatActivity {
+public class TracingOn extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,29 +24,32 @@ public class NotificationOn extends AppCompatActivity {
 
         firstButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent serviceIntent = new Intent(NotificationOn.this, MyService.class);
+                Intent serviceIntent = new Intent(TracingOn.this, MyService.class);
                 serviceIntent.putExtra("inputExtra", "Foreground Service Example in Android");
 
-                ContextCompat.startForegroundService(NotificationOn.this, serviceIntent);
+                ContextCompat.startForegroundService(TracingOn.this, serviceIntent);
 
+                Toast.makeText(getApplicationContext(), "Tracing On", Toast.LENGTH_SHORT).show();
                 openMainPage();
+
             }
         });
 
         Button secondButton = (Button) findViewById(R.id.button3);
         secondButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent serviceIntent = new Intent(NotificationOn.this, MyService.class);
+                Intent serviceIntent = new Intent(TracingOn.this, MyService.class);
                 stopService(serviceIntent);
+                Toast.makeText(getApplicationContext(), "Tracing Off", Toast.LENGTH_SHORT).show();
                 openMainPage();
             }
         });
     }
 
-    public void openDialog() {
-        firstDialog firstdialog = new firstDialog();
-        firstdialog.show(getSupportFragmentManager(), "first dialog");
-    }
+//    public void openDialog() {
+//        firstDialog firstdialog = new firstDialog();
+//        firstdialog.show(getSupportFragmentManager(), "first dialog");
+//    }
 
     public void openMainPage() {
         Intent intent = new Intent(this, MainPage.class);

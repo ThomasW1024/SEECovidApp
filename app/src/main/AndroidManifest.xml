@@ -33,7 +33,7 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".HomeActivity" />
         <activity android:name=".MainPage" />
-        <activity android:name=".NotificationOn" />
+        <activity android:name=".TracingOn" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

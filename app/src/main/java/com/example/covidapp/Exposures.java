@@ -10,12 +10,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.example.covidapp.constant.AppConstant;
+import com.example.covidapp.dataaccesslayer.DatabaseHelper;
 import com.example.covidapp.ephId.EphemeralGenerator;
 import com.example.covidapp.httprequest.HttpRequestFactory;
 import com.example.covidapp.httprequest.KeyTimePair;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Collections;
 import java.util.Collections;
@@ -24,54 +33,71 @@ import java.util.List;
 
 public class Exposures extends AppCompatActivity {
 
+    private TextView statusView;
+
+    private com.android.volley.Response.Listener<JSONArray> onResponse = new Response.Listener<JSONArray>() {
+        @Override
+        public void onResponse(JSONArray response) {
+            Log.e("Response", "success");
+            List<KeyTimePair> list = new ArrayList<>();
+            for (int i = 0; i < response.length(); i += 1) {
+                try {
+                    KeyTimePair pair = new KeyTimePair(response.getJSONObject(i));
+                    list.add(pair);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                isExposed(list);
+            } catch (ParseException e) {
+                Log.e("Exposures", String.valueOf(e.getStackTrace()));
+            }
+        }
+    };
+
+    private
+    com.android.volley.Response.ErrorListener onError = new Response.ErrorListener(){
+        @Override
+        public void onErrorResponse(VolleyError error) {
+
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exposures);
 
-       final  TextView status;
-        Button firstButton = (Button) findViewById(R.id.button5);
-        Boolean exposed = false;
-        status = (TextView) findViewById(R.id.editTextTextPersonName2);
-       final EphemeralGenerator localList = new EphemeralGenerator();
-       final HttpRequestFactory secondList= new  HttpRequestFactory();//////////////
+        statusView = (TextView) findViewById(R.id.editTextTextPersonName2);
+
+        Button firstButton = (Button) findViewById(R.id.checkExposure);
         firstButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                isExposed(status, localList, secondList);
+                HttpRequestFactory.getInstance(getApplicationContext()).downloadKeys(onResponse, onError);
             }
         });
     }
 
-        public void isExposed (TextView status, EphemeralGenerator localList, HttpRequestFactory secondList) throws ParseException {
+        public void isExposed (List<KeyTimePair> secretFromTheServer) throws ParseException {
             boolean exposed = false;
-            List<KeyTimePair> L1= secondList.downloadKeys();//string,long
-            List<String> L2= localList.getList();/// string,string
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            for (int i=0; i<L1.size();i++) {
-                Date d = sdf.parse(L2.get(i));
+            // recompute the secret key from server's secret.
+            List<String> TempIDFromServer = new ArrayList<>();
+            for(int i = 0; i < secretFromTheServer.size(); i+=1){
+                KeyTimePair item = secretFromTheServer.get(i);
+                Date d =  new SimpleDateFormat(AppConstant.DATE_FORMAT).parse(item.getTime());
+                TempIDFromServer.addAll(EphemeralGenerator.getIDs(item.getSecret(), d.getTime()));
             }
-          /*  try {
-                Date d = sdf.parse("20130526160000");
-            } catch (ParseException ex) {
-                Log.v("Exception", ex.getLocalizedMessage());
-            }*/
+            // get all the tempID stored in Android
+            List<String> contactedTempID= DatabaseHelper.getInstance(getApplicationContext()).getTempdata();
 
-//           List<String> l = secondList.downloadKeys();
-//           for ( int i=0;i<l.size();i++) {
-//               System.out.println("Printing list elements " + l.get(i));
-//           }
-          //  localList.getNthID();
-
-            // List from keysHTTP
-
-            /*
-            exposed= !Collections.disjoint(sharedList, personalList);
-            if (exposed) {
-                status.setText("Status: Positive \n  Please visit the nearest hospital \n and get yourself tested" );
-            } else {
-                status.setText("Status: Negative \n  You have not contacted any infected person " );
-            }*/
-
+            // compare
+            // Disjoin return true when on common found
+            exposed = Collections.disjoint(TempIDFromServer, contactedTempID);
+            if(! exposed){
+                statusView.setText("Status: Positive");
+            }else {
+                statusView.setText("Status: Negative");
+            }
         }
     }
