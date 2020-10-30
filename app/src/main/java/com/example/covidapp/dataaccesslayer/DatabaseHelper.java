@@ -86,15 +86,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<KeyTimePair> getTempdata(){
+    public List<String> getTempdata(){
         SQLiteDatabase DB =  this.getWritableDatabase();
         Cursor cursor = DB.rawQuery("Select * from TempIDDetails", null);
-        List<KeyTimePair> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         while(cursor.moveToNext()){
-            list.add(new KeyTimePair()
-                    .putSecret(cursor.getString(0))
-                    .putTime(cursor.getString(1))
-            );
+            list.add(cursor.getString(0));
         }
         cursor.close();
         return list;

@@ -1,5 +1,8 @@
 package com.example.covidapp.ephId;
 
+import com.example.covidapp.constant.AppConstant;
+import com.example.covidapp.httprequest.KeyTimePair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,12 +36,21 @@ public class EphemeralGenerator {
         return ids;
     }
 
+    public static List<String> getIDs(String secret, long time, int numberToGenerate) {
+        return getIDs(secret, time, AppConstant.REGEN_RATE, numberToGenerate);
+    }
+
     // n start with 1
     public static String getNthID(String secret, long time, int interval, int n) {
         if (n < 1)
             throw new IndexOutOfBoundsException();
         return nextID(secret, time + interval * (n - 1));
     }
+
+    public static String getNthID(String secret, long time, int n) {
+        return getNthID(secret, time, AppConstant.REGEN_RATE, n);
+    }
+
 
     private static String generate(String s) {
         return UUID.nameUUIDFromBytes(s.getBytes()).toString();
@@ -48,3 +60,12 @@ public class EphemeralGenerator {
         return null;
     }
 }
+
+
+compare(KeyTimePair c){}
+    List<string> = DB.getTempdata
+    ListB = GenrateID(c.getserert, c.gettime, xx)
+Collections.disjoin(list, listb);
+
+
+
