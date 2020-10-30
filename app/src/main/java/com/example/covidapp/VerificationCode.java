@@ -40,6 +40,9 @@ public class VerificationCode extends AppCompatActivity {
             if ( code.equals("1234"))
             {
                 openDialog();
+                Intent intent = new Intent(VerificationCode.this, CrossCheck.class);
+                startActivity(intent);
+
             }
             else
             {
